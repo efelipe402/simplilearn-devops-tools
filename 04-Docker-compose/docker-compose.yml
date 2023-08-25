@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  web:
+    image: nginx
+    # ports:
+    #   - 2377:2377
+    networks:
+      - network
+  database:
+    image: redis
+    # ports:
+    #   - 6789:6789  
+    networks:
+      - network    
+networks:
+  network:
+  

@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  compose-manager-node-01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: compose-manager-node-01:latest
+    # ports:
+    #   - 2377:2377
+    networks:
+      - docker-swarm-network
+  compose-worker-node-01:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: compose-worker-node-01:latest
+    ports:
+      - 6789:6789  
+    networks:
+      - docker-swarm-network    
+networks:
+  docker-swarm-network:
+    driver: overlay
+    # external: true    
