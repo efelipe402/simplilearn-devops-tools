@@ -1,0 +1,42 @@
+---
+- name: Install and configure Apache (httpd)
+  hosts: ansible_clients
+  remote_user: vagrant
+  become: yes
+
+  tasks:
+    - name: Update package cache (apt)
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Install httpd (Apache)
+      ansible.builtin.package:
+        name: httpd
+        state: latest
+      when: ansible_facts['distribution'] == 'RedHat'
+
+    - name: Install httpd (Apache)
+      ansible.builtin.apt:
+        name: apache2
+        state: latest
+      when: ansible_facts['distribution'] == 'Ubuntu'
+
+    - name: Start and enable Apache service
+      ansible.builtin.service:
+        name: "{{ 'httpd' if ansible_facts['distribution'] == 'RedHat' else 'apache2' }}"
+        state: started
+        enabled: yes
+
+    - name: Create index.html
+      ansible.builtin.copy:
+        content: "Congrats for installing Ansible"
+        dest: /var/www/html/index.html
+      notify:
+        - Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      ansible.builtin.service:
+        name: "{{ 'httpd' if ansible_facts['distribution'] == 'RedHat' else 'apache2' }}"
+        state: restarted
